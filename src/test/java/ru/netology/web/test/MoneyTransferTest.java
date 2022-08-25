@@ -91,9 +91,9 @@ class MoneyTransferTest {
         var finalBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
         var finalBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
         assertEquals(initialBalanceFirstCard, finalBalanceFirstCard,
-                "");
+                "Операция не может быть выполнена");
         assertEquals(initialBalanceSecondCard, finalBalanceSecondCard,
-                "");
+                "Операция не может быть выполнена");
     }
 }
 
