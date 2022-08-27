@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.netology.web.data.DataHelper;
 import ru.netology.web.page.DashboardPage;
 import ru.netology.web.page.LoginPageV2;
+import ru.netology.web.page.TransferPage;
 
 import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,86 +15,88 @@ class MoneyTransferTest {
     @BeforeEach
     void setup() {
         open("http://localhost:9999");
+    }
+
+
+    @Test
+    public void shouldTransferFromFirstToSecond() {
         var loginPage = new LoginPageV2();
         //var loginPage = open("http://localhost:9999", LoginPageV2.class);
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
+        DashboardPage dashboardPage = new DashboardPage();
+        var startAmountFirstCard = dashboardPage.getCardBalance(0);
+        var startAmountSecondCard = dashboardPage.getCardBalance(1);
+        var transferPage = new TransferPage();
+        var amount = transferPage.getAmountPositive();
+        transferPage.transferFromFirstToSecond(amount);
+        var actualBalance1 = dashboardPage.getCardBalance(0);
+        var actualBalance2 = dashboardPage.getCardBalance(1);
+        assertEquals(startAmountFirstCard+amount, actualBalance1);
+        assertEquals(startAmountSecondCard, actualBalance2+amount);
     }
-
-    @Test
-    public void shouldCardBalancing() {
-        var dashboardPage = new DashboardPage();
-        var firstCardId = DataHelper.getFirstCardId();
-        var balanceFirstCard = dashboardPage.getCardBalance(firstCardId);
-        var secondCardId = DataHelper.getSecondCardId();
-        var balanceSecondCard = dashboardPage.getCardBalance(secondCardId);
-    }
-
-    @Test
-    public void shouldTransferFromFirstToSecond() {
-        var dashboardPage = new DashboardPage();
-        var firstCardId = DataHelper.getFirstCardId();
-        var initialBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
-        var secondCardId = DataHelper.getSecondCardId();
-        var initialBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
-        var transferPage = dashboardPage.transfer(secondCardId);
-        var transferInfo = DataHelper.getSecondCardTransferInfoPositive();
-        transferPage.transferBetweenOwnCards(transferInfo);
-        var finalBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
-        var finalBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
-        assertEquals(transferInfo.getAmount(), initialBalanceFirstCard - finalBalanceFirstCard);
-        assertEquals(transferInfo.getAmount(), finalBalanceSecondCard - initialBalanceSecondCard);
-    }
-    @Test
+   @Test
     public void shouldTransferFromSecondToFirst() {
-        var dashboardPage = new DashboardPage();
-        var firstCardId = DataHelper.getFirstCardId();
-        var initialBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
-        var secondCardId = DataHelper.getSecondCardId();
-        var initialBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
-        var transferPage = dashboardPage.transfer(firstCardId);
-        var transferInfo = DataHelper.getFirstCardTransferInfoPositive();
-        transferPage.transferBetweenOwnCards(transferInfo);
-        var finalBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
-        var finalBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
-        assertEquals(transferInfo.getAmount(), finalBalanceFirstCard - initialBalanceFirstCard);
-        assertEquals(transferInfo.getAmount(), initialBalanceSecondCard - finalBalanceSecondCard);
+       var loginPage = new LoginPageV2();
+        //var loginPage = open("http://localhost:9999", LoginPageV2.class);
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+        verificationPage.validVerify(verificationCode);
+        DashboardPage dashboardPage = new DashboardPage();
+        var startAmountFirstCard = dashboardPage.getCardBalance(0);
+        var startAmountSecondCard = dashboardPage.getCardBalance(1);
+        var transferPage = new TransferPage();
+        var amount = transferPage.getAmountPositive();
+        transferPage.transferFromSecondToFirst(amount);
+        var actualBalance1 = dashboardPage.getCardBalance(0);
+        var actualBalance2 = dashboardPage.getCardBalance(1);
+        assertEquals(startAmountFirstCard, actualBalance1+amount);
+        assertEquals(startAmountSecondCard+amount, actualBalance2);
     }
 
     @Test
     public void shouldTransferFromSecondToFirstNegativeValue() {
-        var dashboardPage = new DashboardPage();
-        var firstCardId = DataHelper.getFirstCardId();
-        var initialBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
-        var secondCardId = DataHelper.getSecondCardId();
-        var initialBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
-        var transferPage = dashboardPage.transfer(firstCardId);
-        var transferInfo = DataHelper.getFirstCardTransferInfoNegative();
-        transferPage.transferBetweenOwnCards(transferInfo);
-        var finalBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
-        var finalBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
-        assertEquals(-transferInfo.getAmount(), finalBalanceFirstCard - initialBalanceFirstCard);
-        assertEquals(-transferInfo.getAmount(), initialBalanceSecondCard - finalBalanceSecondCard);
+        var loginPage = new LoginPageV2();
+        //var loginPage = open("http://localhost:9999", LoginPageV2.class);
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+        verificationPage.validVerify(verificationCode);
+        DashboardPage dashboardPage = new DashboardPage();
+        var firstCardId = DataHelper.getFirstCardInfo();
+        var startAmountFirstCard = dashboardPage.getCardBalance(0);
+        var startAmountSecondCard = dashboardPage.getCardBalance(1);
+        var transferPage = new TransferPage();
+        var amount = transferPage.getAmountMinusSum();
+        transferPage.transferFromFirstToSecondWithMinusSum(amount);
+        var actualBalance1 = dashboardPage.getCardBalance(0);
+        var actualBalance2 = dashboardPage.getCardBalance(1);
+        assertEquals(startAmountFirstCard-amount, actualBalance1);
+        assertEquals(startAmountSecondCard+amount, actualBalance2);
     }
 
     @Test
     public void shouldTransferFromFirstToSecondNegativeBalance() {
-        var dashboardPage = new DashboardPage();
-        var firstCardId = DataHelper.getFirstCardId();
-        var initialBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
-        var secondCardId = DataHelper.getSecondCardId();
-        var initialBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
-        var transferPage = dashboardPage.transfer(secondCardId);
-        var transferInfo = DataHelper.getSecondCardTransferInfoNegative();
-        transferPage.transferBetweenOwnCards(transferInfo);
-        var finalBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
-        var finalBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
-        assertEquals(initialBalanceFirstCard, finalBalanceFirstCard,
-                "Операция не может быть выполнена");
-        assertEquals(initialBalanceSecondCard, finalBalanceSecondCard,
-                "Операция не может быть выполнена");
+        var loginPage = new LoginPageV2();
+        //var loginPage = open("http://localhost:9999", LoginPageV2.class);
+        var authInfo = DataHelper.getAuthInfo();
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+        verificationPage.validVerify(verificationCode);
+        DashboardPage dashboardPage = new DashboardPage();
+        var firstCardId = DataHelper.getFirstCardInfo();
+        var startAmountFirstCard = dashboardPage.getCardBalance(0);
+        var startAmountSecondCard = dashboardPage.getCardBalance(1);
+        var transferPage = new TransferPage();
+        var amount = transferPage.getAmountAboveBalance();
+        transferPage.transferFromFirstToSecondOverBalance(amount);
+        var actualBalance1 = dashboardPage.getCardBalance(0);
+        var actualBalance2 = dashboardPage.getCardBalance(1);
+        assertEquals(startAmountFirstCard - amount, actualBalance1);
+        assertEquals(startAmountSecondCard + amount, actualBalance2);
     }
 }
 

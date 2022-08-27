@@ -2,16 +2,15 @@ package ru.netology.web.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import ru.netology.web.data.DataHelper;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static org.junit.jupiter.params.shadow.com.univocity.parsers.conversions.Conversions.trim;
+import static com.codeborne.selenide.Selenide.*;
 
 public class DashboardPage {
     private final SelenideElement heading = $("[data-test-id=dashboard]");
+    private final SelenideElement appearedFirstCard = $$("[data-test-id=action-deposit]").get(0);
+    private final SelenideElement appearedSecondCard = $$("[data-test-id=action-deposit]").get(1);
     private final SelenideElement title = $("h1.heading");
     private final String balanceStart = "баланс:";
     private final String balanceFinish = "р.";
@@ -22,20 +21,22 @@ public class DashboardPage {
     }
     private ElementsCollection cards = $$(".list__item div");
 
-    private int extractBalance(String cardInfo) {
+    public int getCardBalance(int index){
+        String text = cards.get(index).text();
+        return getBalanceFromText(text);
+    }
+
+    private int getBalanceFromText (String cardInfo) {
         var value = cardInfo.substring
-                        (cardInfo.indexOf(balanceStart) + balanceStart.length(),
-                                cardInfo.indexOf(balanceFinish)).trim();
+                (cardInfo.indexOf(balanceStart) + balanceStart.length(),
+                        cardInfo.indexOf(balanceFinish)).trim();
         return Integer.parseInt(value);
     }
-
-    public int getCardBalance(DataHelper.CardId cardId) {
-        return extractBalance($("[data-test-id='" + cardId.getId() + "']").getText());
+    public void appearedFirstCard(){
+        appearedFirstCard.click();
     }
-
-    public TransferPage transfer(DataHelper.CardId cardId) {
-        $("[data-test-id='" + cardId.getId() + "'] [data-test-id=action-deposit]").click();
-        return new TransferPage();
+    public void appearedSecondCard(){
+        appearedSecondCard.click();
     }
 }
 
