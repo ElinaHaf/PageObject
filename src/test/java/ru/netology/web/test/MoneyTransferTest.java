@@ -26,16 +26,16 @@ class MoneyTransferTest {
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
-        DashboardPage dashboardPage = new DashboardPage();
+        var dashboardPage = new DashboardPage();
         var startAmountFirstCard = dashboardPage.getCardBalance(0);
         var startAmountSecondCard = dashboardPage.getCardBalance(1);
         var transferPage = new TransferPage();
-        var amount = transferPage.getAmountPositive();
-        transferPage.transferFromFirstToSecond(amount);
+        dashboardPage.appearedSecondCard();
+        transferPage.moneyTransfer(DataHelper.getSecondСardInfo(),"1000");
         var actualBalance1 = dashboardPage.getCardBalance(0);
         var actualBalance2 = dashboardPage.getCardBalance(1);
-        assertEquals(startAmountFirstCard+amount, actualBalance1);
-        assertEquals(startAmountSecondCard, actualBalance2+amount);
+        assertEquals(startAmountFirstCard, actualBalance1);
+        assertEquals(startAmountSecondCard, actualBalance2);
     }
    @Test
     public void shouldTransferFromSecondToFirst() {
@@ -45,16 +45,16 @@ class MoneyTransferTest {
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
-        DashboardPage dashboardPage = new DashboardPage();
+        var dashboardPage = new DashboardPage();
         var startAmountFirstCard = dashboardPage.getCardBalance(0);
         var startAmountSecondCard = dashboardPage.getCardBalance(1);
         var transferPage = new TransferPage();
-        var amount = transferPage.getAmountPositive();
-        transferPage.transferFromSecondToFirst(amount);
+        dashboardPage.appearedFirstCard();
+        transferPage.moneyTransfer(DataHelper.getFirstCardInfo(),"5000");
         var actualBalance1 = dashboardPage.getCardBalance(0);
         var actualBalance2 = dashboardPage.getCardBalance(1);
-        assertEquals(startAmountFirstCard, actualBalance1+amount);
-        assertEquals(startAmountSecondCard+amount, actualBalance2);
+        assertEquals(startAmountFirstCard, actualBalance1);
+        assertEquals(startAmountSecondCard, actualBalance2);
     }
 
     @Test
@@ -66,16 +66,15 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
         DashboardPage dashboardPage = new DashboardPage();
-        var firstCardId = DataHelper.getFirstCardInfo();
         var startAmountFirstCard = dashboardPage.getCardBalance(0);
         var startAmountSecondCard = dashboardPage.getCardBalance(1);
         var transferPage = new TransferPage();
-        var amount = transferPage.getAmountMinusSum();
-        transferPage.transferFromFirstToSecondWithMinusSum(amount);
+        dashboardPage.appearedFirstCard();
+        transferPage.moneyTransfer(DataHelper.getFirstCardInfo(), "-3000");
         var actualBalance1 = dashboardPage.getCardBalance(0);
         var actualBalance2 = dashboardPage.getCardBalance(1);
-        assertEquals(startAmountFirstCard-amount, actualBalance1);
-        assertEquals(startAmountSecondCard+amount, actualBalance2);
+        assertEquals(startAmountFirstCard, actualBalance1);
+        assertEquals(startAmountSecondCard, actualBalance2);
     }
 
     @Test
@@ -87,16 +86,17 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
         DashboardPage dashboardPage = new DashboardPage();
-        var firstCardId = DataHelper.getFirstCardInfo();
         var startAmountFirstCard = dashboardPage.getCardBalance(0);
         var startAmountSecondCard = dashboardPage.getCardBalance(1);
         var transferPage = new TransferPage();
-        var amount = transferPage.getAmountAboveBalance();
-        transferPage.transferFromFirstToSecondOverBalance(amount);
+        dashboardPage.appearedSecondCard();
+        transferPage.moneyTransfer(DataHelper.getSecondСardInfo(), "120000");
         var actualBalance1 = dashboardPage.getCardBalance(0);
         var actualBalance2 = dashboardPage.getCardBalance(1);
-        assertEquals(startAmountFirstCard - amount, actualBalance1);
-        assertEquals(startAmountSecondCard + amount, actualBalance2);
+        transferPage.getError();
+
+        assertEquals(startAmountFirstCard, actualBalance1);
+        assertEquals(startAmountSecondCard, actualBalance2);
     }
 }
 

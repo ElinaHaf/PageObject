@@ -9,6 +9,8 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class DashboardPage {
     private final SelenideElement heading = $("[data-test-id=dashboard]");
+
+    private SelenideElement personalAccount = $("[data-test-id=dashboard]");
     private final SelenideElement appearedFirstCard = $$("[data-test-id=action-deposit]").get(0);
     private final SelenideElement appearedSecondCard = $$("[data-test-id=action-deposit]").get(1);
     private final SelenideElement title = $("h1.heading");
